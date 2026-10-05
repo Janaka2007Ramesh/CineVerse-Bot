@@ -9,6 +9,13 @@ API_HASH = os.environ.get("API_HASH", "YOUR_API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "YOUR_BOT_TOKEN")
 PORT = int(os.environ.get("PORT", "8080"))
 
+# Event Loop එක නිවැරදිව සැකසීම
+try:
+    loop = asyncio.get_event_loop()
+except RuntimeError:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
 app = Client(
     "cineverse_bot",
     api_id=API_ID,
@@ -42,7 +49,6 @@ async def start_handler(client, message):
             reply_markup=keyboard
         )
 
-# Render එකේ Web Service එකට අවශ්‍ය වන කුඩා වෙබ් සර්වර් කොටස
 async def handle(request):
     return web.Response(text="CineVerseLK Bot is running!")
 
@@ -61,4 +67,4 @@ async def main():
     await asyncio.Event().wait()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    loop.run_until_complete(main())
