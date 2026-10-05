@@ -1,0 +1,43 @@
+import os
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+API_ID = int(os.environ.get("API_ID", "1234567"))
+API_HASH = os.environ.get("API_HASH", "YOUR_API_HASH")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "YOUR_BOT_TOKEN")
+
+app = Client(
+    "cineverse_bot",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    bot_token=BOT_TOKEN
+)
+
+@app.on_message(filters.command("start"))
+async def start_handler(client, message):
+    command_args = message.command
+    
+    keyboard = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("🌐 Official Website 🌐", url="https://www.CineVerseLK.com"),
+            InlineKeyboardButton("🏆 Telegram Channel 🏆", url="https://t.me/Oyaage_Channel")
+        ],
+        [
+            InlineKeyboardButton("🗣️️ Community Group 🗣️", url="https://t.me/Oyaage_Group")
+        ]
+    ])
+    
+    if len(command_args) > 1:
+        movie_id = command_args[1]
+        await message.reply_text(
+            f"🎬 **CineVerseLK Movie Download**\n\nඔබ ඉල්ලූ චිත්‍රපටය මෙන්න! (Movie ID: {movie_id})\n\n👇 පහත බොත්තම මඟින් ඩවුන්ලෝඩ් කරගන්න.",
+            reply_markup=keyboard
+        )
+    else:
+        await message.reply_text(
+            "👋 ආයුබෝවන්! CineVerseLK වෙත සාදරයෙන් පිළිගනිමු.\n\nකරුණාකර අපගේ වෙබ් අඩවියට ගොස් ඩවුන්ලෝඩ් බටන් එක ක්ලික් කිරීම මඟින් මෙතැනට පැමිණෙන්න.",
+            reply_markup=keyboard
+        )
+
+print("CineVerseLK Bot is running...")
+app.run()
