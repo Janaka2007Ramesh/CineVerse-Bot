@@ -1,10 +1,13 @@
 import os
+import asyncio
+from aiohttp import web
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 API_ID = int(os.environ.get("API_ID", "1234567"))
 API_HASH = os.environ.get("API_HASH", "YOUR_API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "YOUR_BOT_TOKEN")
+PORT = int(os.environ.get("PORT", "8080"))
 
 app = Client(
     "cineverse_bot",
@@ -23,7 +26,7 @@ async def start_handler(client, message):
             InlineKeyboardButton("🏆 Telegram Channel 🏆", url="https://t.me/Oyaage_Channel")
         ],
         [
-            InlineKeyboardButton("🗣️️ Community Group 🗣️", url="https://t.me/Oyaage_Group")
+            InlineKeyboardButton("🗣 Community Group 🗣️", url="https://t.me/Oyaage_Group")
         ]
     ])
     
@@ -39,5 +42,23 @@ async def start_handler(client, message):
             reply_markup=keyboard
         )
 
-print("CineVerseLK Bot is running...")
-app.run()
+# Render එකේ Web Service එකට අවශ්‍ය වන කුඩා වෙබ් සර්වර් කොටස
+async def handle(request):
+    return web.Response(text="CineVerseLK Bot is running!")
+
+async def web_server():
+    server = web.Application()
+    server.add_routes([web.get("/", handle)])
+    runner = web.AppRunner(server)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", PORT)
+    await site.start()
+
+async def main():
+    await web_server()
+    await app.start()
+    print("CineVerseLK Bot and Web Server are running...")
+    await asyncio.Event().wait()
+
+if __name__ == "__main__":
+    asyncio.run(main())
